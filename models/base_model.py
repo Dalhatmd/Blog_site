@@ -30,5 +30,9 @@ class BaseModel:
         json_dict["updated_at"] = self.updated_at.isoformat()
         json_dict["__class__"] = self.__class__.__name__
         return json_dict
+    
+    def save(self):
+        """Updates the updated at time"""
+        self.updated_at = datetime.now()
 
     

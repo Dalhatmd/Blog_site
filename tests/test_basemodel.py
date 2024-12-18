@@ -31,6 +31,9 @@ class TestBaseModel(unittest.TestCase):
     def test_unique_id(self):
         self.assertNotEqual(self.model.id, self.model2.id)
 
+    def test_save(self):
+        self.model.save()
+        self.assertNotEqual(self.model.created_at, self.model.updated_at)
 
     def tearDown(self):
         del self.model
