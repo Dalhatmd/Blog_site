@@ -20,7 +20,8 @@ class User(BaseModel):
     username = Column(String(128), nullable=True, unique=True)
 
     blogs = relationship("Blog", back_populates="user", cascade="all, delete-orphan")
-    
+    comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
+
     def __init__(self, *args: list, **kwargs: dict):
         """ Initialize a User instance
         """

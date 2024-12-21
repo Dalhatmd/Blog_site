@@ -17,6 +17,7 @@ class Blog(BaseModel):
     
     # Establish the relationship with User
     user = relationship("User", back_populates="blogs")
+    comments = relationship("Comment", back_populates="blog", cascade="all, delete-orphan")
     
     def __init__(self, *args: list, **kwargs: dict):
         """Initialize a Blog instance"""

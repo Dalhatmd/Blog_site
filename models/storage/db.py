@@ -7,12 +7,14 @@ from models.blogs import Blog
 from models.user import User
 from models.base_model import BaseModel
 from models.base_model import Base
+from models.comments import Comment
 
 
 # Define models dictionary - can be expanded with more models
 models: Dict[str, Type[BaseModel]] = {
     'User': User,
-    'Blog': Blog
+    'Blog': Blog,
+    'Comment': Comment
 }
 
 class DB:
