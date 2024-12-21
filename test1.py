@@ -1,6 +1,7 @@
 #!/usr/bin/python3
+""" test for user functionality"""
 import logging
-from models.storage.db import UserDB
+from models.storage.db import DB
 from models.user import User
 
 # Set up logging
@@ -10,7 +11,7 @@ logger = logging.getLogger(__name__)
 try:
     # Initialize database
     logger.info("Initializing database connection")
-    db = UserDB()
+    db = DB()
 
     # Create a new user
     logger.info("Creating new user object")

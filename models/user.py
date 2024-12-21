@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import hashlib
 
@@ -16,6 +17,8 @@ class User(Base):
     _password = Column('password', String(128), nullable=True)
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
+
+    blogs = relationship("Blog", back_populates="user", cascade="all, delete-orphan")
     
     def __init__(self, *args: list, **kwargs: dict):
         """ Initialize a User instance
