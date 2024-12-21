@@ -39,7 +39,7 @@ if db.add_user(new_user):
             print(f"User has {len(user_blogs)} blog posts")
 
             # Update the blog
-            if db.update_blog(blog.id, content="Updated content"):
+            if db.update_blog(blog.id, content="new freaking content"):
                 print("Blog updated successfully")
 
             # Get the updated blog

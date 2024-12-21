@@ -17,6 +17,7 @@ class User(Base):
     _password = Column('password', String(128), nullable=True)
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
+    username = Column(String(128), nullable=True, unique=True)
 
     blogs = relationship("Blog", back_populates="user", cascade="all, delete-orphan")
     
@@ -68,7 +69,7 @@ class User(Base):
         """ Display User name based on email/first_name/last_name
         """
         if self.email is None and self.first_name is None \
-                and self.last_name is None:
+                and self.last_name is None and self.username is None:
             return ""
         if self.first_name is None and self.last_name is None:
             return "{}".format(self.email)
@@ -78,3 +79,4 @@ class User(Base):
             return "{}".format(self.last_name)
         else:
             return "{} {}".format(self.first_name, self.last_name)
+
