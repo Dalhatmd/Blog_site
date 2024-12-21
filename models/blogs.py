@@ -2,9 +2,9 @@ from sqlalchemy import Column, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from uuid import uuid4
-from models.user import Base
+from models.base_model import BaseModel
 
-class Blog(Base):
+class Blog(BaseModel):
     """Blog class for SQLAlchemy"""
     __tablename__ = 'blogs'
 

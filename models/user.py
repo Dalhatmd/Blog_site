@@ -2,10 +2,10 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import hashlib
+from models.base_model import BaseModel
 
-Base = declarative_base()
 
-class User(Base):
+class User(BaseModel):
     """ User class for SQLAlchemy
     """
     __tablename__ = 'users'

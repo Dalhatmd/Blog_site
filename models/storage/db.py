@@ -1,20 +1,25 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
-from typing import List, Optional
+from typing import List, Optional, Type, Any, Dict
 from os import getenv
 from models.blogs import Blog
-from models.user import User, Base
-from datetime import datetime
+from models.user import User
+from models.base_model import BaseModel
+from models.base_model import Base
 
-models = {'User': User}
+
+# Define models dictionary - can be expanded with more models
+models: Dict[str, Type[BaseModel]] = {
+    'User': User,
+    'Blog': Blog
+}
 
 class DB:
-    """Database manager for User objects using SQLAlchemy"""
+    """Generic database manager for SQLAlchemy models"""
     
     def __init__(self):
         """Initialize database connection and create tables"""
-        
         try:
             # Get database credentials from environment variables
             mysql_host = getenv('MYSQL_HOST', 'localhost')
@@ -33,7 +38,7 @@ class DB:
             self._engine = create_engine(
                 self.database_url,
                 pool_pre_ping=True,
-                echo=True
+                echo=False
             )
             if mysql_mode == 'test':
                 Base.metadata.drop_all(self._engine)
@@ -47,132 +52,122 @@ class DB:
         except Exception as e:
             raise
 
-    def add_user(self, user: User) -> bool:
-        """Add a new user to the database"""
+    def _get_model(self, model_name: str) -> Type[BaseModel]:
+        """Get model class by name"""
+        if model_name not in models:
+            raise ValueError(f"Model {model_name} not found in registered models")
+        return models[model_name]
+
+    def add(self, model_name: str, instance: BaseModel) -> Optional[BaseModel]:
+        """Add a new instance to the database"""
         session = None
         try:
+            model_class = self._get_model(model_name)
+            if not isinstance(instance, model_class):
+                raise ValueError(f"Instance must be of type {model_class.__name__}")
+                
             session = self._Session()
-            
-            # Add user to session
-            session.add(user)            
-            # Flush to detect any issues before commit
+            session.add(instance)
             session.flush()
-            
-            # Commit the transaction
             session.commit()
-            return True
+            return instance
             
-        except SQLAlchemyError as e:
+        except (SQLAlchemyError, Exception) as e:
             if session:
                 session.rollback()
-            return False
-            
-        except Exception as e:
-            if session:
-                session.rollback()
-            return False
+            return None
             
         finally:
             if session:
                 session.close()
 
-    def get_user_by_email(self, email: str) -> Optional[User]:
-        """Retrieve a user by email"""
+    def get_by_field(self, model_name: str, field_name: str, value: Any) -> Optional[BaseModel]:
+        """Retrieve an instance by field value"""
         try:
+            model_class = self._get_model(model_name)
             session = self._Session()
-            user = session.query(User).filter(User.email == email).first()
-            return user
-        except SQLAlchemyError as e:
+            
+            if not hasattr(model_class, field_name):
+                raise ValueError(f"Field {field_name} not found in model {model_name}")
+                
+            instance = session.query(model_class).filter(
+                getattr(model_class, field_name) == value
+            ).first()
+            return instance
+            
+        except (SQLAlchemyError, Exception) as e:
             return None
+            
         finally:
             session.close()
 
-    def create_blog(self, user_id: str, title: str, content: str) -> Optional[Blog]:
-        """Create a new blog post for a user"""
+    def get_all_by_field(self, model_name: str, field_name: str, value: Any) -> List[BaseModel]:
+        """Retrieve all instances matching a field value"""
         try:
+            model_class = self._get_model(model_name)
             session = self._Session()
-            user = session.query(User).filter(User.id == user_id).first()
             
-            if not user:
-                return None
+            if not hasattr(model_class, field_name):
+                raise ValueError(f"Field {field_name} not found in model {model_name}")
                 
-            blog = Blog(
-                title=title,
-                content=content,
-                user_id=user_id
-            )
+            instances = session.query(model_class).filter(
+                getattr(model_class, field_name) == value
+            ).all()
+            return instances
             
-            session.add(blog)
-            session.commit()
-            return blog
-            
-        except SQLAlchemyError as e:
-            session.rollback()
-            return None
-        finally:
-            session.close()
-    
-    def get_user_blogs(self, user_id: str) -> List[Blog]:
-        """Get all blogs for a user"""
-        try:
-            session = self._Session()
-            blogs = session.query(Blog).filter(Blog.user_id == user_id).all()
-            return blogs
-        except SQLAlchemyError as e:
+        except (SQLAlchemyError, Exception) as e:
             return []
-        finally:
-            session.close()
-    
-    def get_blog(self, blog_id: str) -> Optional[Blog]:
-        """Get a specific blog by ID"""
-        try:
-            session = self._Session()
-            blog = session.query(Blog).filter(Blog.id == blog_id).first()
-            return blog
-        except SQLAlchemyError as e:
-            return None
-        finally:
-            session.close()
-    
-    def update_blog(self, blog_id: str, title: str = None, content: str = None) -> bool:
-        """Update a blog post"""
-        try:
-            session = self._Session()
-            blog = session.query(Blog).filter(Blog.id == blog_id).first()
             
-            if not blog:
+        finally:
+            session.close()
+
+    def update(self, model_name: str, instance_id: str, **kwargs) -> bool:
+        """Update an instance with provided fields"""
+        try:
+            model_class = self._get_model(model_name)
+            session = self._Session()
+            
+            instance = session.query(model_class).filter(
+                model_class.id == instance_id
+            ).first()
+            
+            if not instance:
                 return False
                 
-            if title:
-                blog.title = title
-            if content:
-                blog.content = content
-                
-            blog.updated_at = datetime.now()
+            for field, value in kwargs.items():
+                if hasattr(instance, field):
+                    setattr(instance, field, value)
+            
             session.commit()
             return True
             
-        except SQLAlchemyError as e:
+        except (SQLAlchemyError, Exception) as e:
             session.rollback()
             return False
+            
         finally:
             session.close()
-    
-    def delete_blog(self, blog_id: str) -> bool:
-        """Delete a blog post"""
+
+    def delete(self, model_name: str, instance_id: str) -> bool:
+        """Delete an instance by ID"""
         try:
+            model_class = self._get_model(model_name)
             session = self._Session()
-            blog = session.query(Blog).filter(Blog.id == blog_id).first()
             
-            if not blog:
+            instance = session.query(model_class).filter(
+                model_class.id == instance_id
+            ).first()
+            
+            if not instance:
                 return False
                 
-            session.delete(blog)
+            session.delete(instance)
             session.commit()
             return True
             
-        except SQLAlchemyError as e:
+        except (SQLAlchemyError, Exception) as e:
             session.rollback()
             return False
+            
         finally:
             session.close()
