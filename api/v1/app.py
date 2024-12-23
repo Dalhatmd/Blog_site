@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, make_response, request, abort
+from flask import Flask, jsonify, request, abort, render_template
 from flask_cors import CORS
 from api.v1.views import app_views
 from os import getenv
@@ -31,10 +31,11 @@ def method_not_allowed(e):
     """
     return jsonify({"error": "Method not allowed"}), 405
 
-
-
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
     port = getenv('BLOG_PORT', '5000')
-    app.run(host=host, port=port)
+    app.run(host=host, port=port, debug=True)
