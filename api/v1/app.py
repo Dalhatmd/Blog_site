@@ -35,6 +35,10 @@ def method_not_allowed(e):
 def index():
     return render_template('index.html')
 
+@app.route('/dashboard')
+def home():
+    return render_template('dashboard.html')
+
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
     port = getenv('BLOG_PORT', '5000')

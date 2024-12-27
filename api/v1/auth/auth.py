@@ -36,7 +36,7 @@ def token_required(f):
             except IndexError:
                 return jsonify({'message': 'Invalid token format'}), 401
         if 'Authorization' not in request.headers:
-            return jsonify({'Authorization needed'})
+            return jsonify({'message': 'Authorization needed'})
 
         if not token:
             return jsonify({'message': 'Token is missing'}), 401

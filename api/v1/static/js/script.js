@@ -41,7 +41,7 @@ $(document).ready(function() {
             }),
             success: function(response) {
                 localStorage.setItem('token', response.token);
-                window.location.href = '/dashboard.html';
+                window.location.href = '../templates/dashboard.html';
             },
             error: function(xhr) {
                 $('#error').text(xhr.responseJSON.message);

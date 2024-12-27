@@ -74,6 +74,7 @@ def login():
         }
     })
 
+
 @app_views.route('/me', methods=['GET'])
 @token_required
 def get_me():

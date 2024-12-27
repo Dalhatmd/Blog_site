@@ -70,7 +70,7 @@ class DB:
                 
             session = self._Session()
             session.add(instance)
-            session.flush()
+           # session.flush()
             session.commit()
             return instance
             
@@ -149,6 +149,23 @@ class DB:
             
         finally:
             session.close()
+
+    def get_all(self, model_name: str) -> List[BaseModel]:
+        """Retrieve all instances of a model"""
+        session = None
+        try:
+            model_class = self._get_model(model_name)
+            session = self._Session()
+            
+            instances = session.query(model_class).all()
+            return instances
+            
+        except (SQLAlchemyError, Exception) as e:
+            return []
+            
+        finally:
+            if session:
+                session.close()
 
     def delete(self, model_name: str, instance_id: str) -> bool:
         """Delete an instance by ID"""
