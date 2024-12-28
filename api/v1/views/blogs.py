@@ -11,7 +11,9 @@ db = DB()
 @app_views.route('/blogs', methods=['GET'], strict_slashes=False)
 def show_blogs():
     blogs = db.get_all('Blog')
-    return jsonify([blog.to_dict() for blog in blogs])
+    if blogs:
+        return jsonify([blog.to_dict() for blog in blogs])
+    return jsonify([])
 
 @app_views.route('/blogs', methods=['POST'], strict_slashes=False)
 @token_required
@@ -57,7 +59,6 @@ def delete_blog(blog_id):
     return jsonify({}), 200
 
 @app_views.route('/blogs/<blog_id>/comments', methods=['GET'], strict_slashes=False)
-@token_required
 def show_comments(blog_id):
     blog = db.get_by_id(Blog, blog_id)
     if not blog:
@@ -90,6 +91,7 @@ def show_comment(blog_id, comment_id):
 
 
 @app_views.route('/blogs/<blog_id>/comments/<comment_id>', methods=['PUT'], strict_slashes=False)
+@token_required
 def update_comment(blog_id, comment_id):
     comment = db.get_by_id(Comment, comment_id)
     if not comment:
@@ -102,11 +104,10 @@ def update_comment(blog_id, comment_id):
 
 
 @app_views.route('/blogs/<blog_id>/comments/<comment_id>', methods=['DELETE'], strict_slashes=False)
+@token_required
 def delete_comment(blog_id, comment_id):
     comment = db.get_by_id(Comment, comment_id)
     if not comment:
         return jsonify({'message': 'Comment not found'}), 404
     db.delete(comment)
     return jsonify({}), 200
-
-

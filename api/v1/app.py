@@ -2,6 +2,10 @@ from flask import Flask, jsonify, request, abort, render_template
 from flask_cors import CORS
 from api.v1.views import app_views
 from os import getenv
+from models.storage.db import DB
+
+
+db = DB()
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
@@ -35,9 +39,12 @@ def method_not_allowed(e):
 def index():
     return render_template('index.html')
 
-@app.route('/dashboard')
+@app.route('/home')
 def home():
-    return render_template('dashboard.html')
+    blogs = db.get_all('Blog')
+    blogs_dict = [blog.to_dict() for blog in blogs]
+    return render_template('blogs.html', blogs=blogs_dict)
+
 
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
