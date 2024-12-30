@@ -12,3 +12,15 @@ class Comment(BaseModel):
 
     user = relationship("User", back_populates="comments")
     blog = relationship("Blog", back_populates="comments")
+
+    def to_dict(self):
+        """ dictionary representation of comments"""
+        comment_dict = {
+            'content': self.content,
+            'user_id': self.user_id,
+            'blog_id': self.blog_id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'comment_id': self.id
+        }
+        return comment_dict

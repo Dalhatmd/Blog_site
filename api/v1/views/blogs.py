@@ -4,6 +4,7 @@ from models.blogs import Blog
 from api.v1.views import app_views
 from ..auth.auth import token_required
 from models.comments import Comment
+from sqlalchemy.orm import joinedload
 
 
 db = DB()
@@ -32,7 +33,7 @@ def create_blog():
 
 @app_views.route('/blogs/<blog_id>', methods=['GET'], strict_slashes=False)
 def show_blog(blog_id):
-    blog = db.get_by_id(Blog, blog_id)
+    blog = db.get_by_field('Blog', 'id', blog_id)
     if not blog:
         return jsonify({'message': 'Blog not found'}), 404
     return jsonify(blog.to_dict())
@@ -40,51 +41,61 @@ def show_blog(blog_id):
 @app_views.route('/blogs/<blog_id>', methods=['PUT'], strict_slashes=False)
 @token_required
 def update_blog(blog_id):
-    blog = db.get_by_id(Blog, blog_id)
-    if not blog:
-        return jsonify({'message': 'Blog not found'}), 404
     data = request.get_json()
-    for key, value in data.items():
-        setattr(blog, key, value)
-    db.save()
-    return jsonify(blog.to_dict())
+    if not data:
+        return jsonify({'Error': 'data not provided'}), 400
+    db.update('Blog', blog_id, **data)
+    return jsonify({'Message': 'Blog updated successfully'}), 200
 
 @app_views.route('/blogs/<blog_id>', methods=['DELETE'], strict_slashes=False)
 @token_required
 def delete_blog(blog_id):
-    blog = db.get_by_id(Blog, blog_id)
+    blog = db.get_by_field('Blog', 'id', blog_id)
     if not blog:
         return jsonify({'message': 'Blog not found'}), 404
-    db.delete(blog)
+    db.delete('Blog', blog_id)
     return jsonify({}), 200
 
 @app_views.route('/blogs/<blog_id>/comments', methods=['GET'], strict_slashes=False)
 def show_comments(blog_id):
-    blog = db.get_by_id(Blog, blog_id)
+    # get the session to avoid detachment
+    session = db.get_session()
+    blog = db.get_by_field('Blog', 'id', blog_id)
     if not blog:
-        return jsonify({'message': 'Blog not found'}), 404
-    return jsonify([comment.to_dict() for comment in blog.comments])
+        return jsonify({'message': 'Blog Not Found'})
+    comments = session.query(Comment).filter(Comment.blog_id == blog_id).all()
+    if not comments:
+        return jsonify({})
+    return jsonify([comment.to_dict() for comment in comments])
 
 @app_views.route('/blogs/<blog_id>/comments', methods=['POST'], strict_slashes=False)
 @token_required
 def create_comment(blog_id):
-    blog = db.get_by_id(Blog, blog_id)
+    blog = db.get_by_field('Blog', 'id', blog_id)
     if not blog:
         return jsonify({'message': 'Blog not found'}), 404
     data = request.get_json()
+    user_id=request.user_id
     if not all(field in data for field in ['content']):
         return jsonify({'message': 'Missing required fields'}), 400
-    comment = Comment(
-        content=data['content'],
-        blog_id=blog_id
-    )
-    saved_comment = db.add(Comment, comment)
-    return jsonify(saved_comment.to_dict()), 201
+    try:
+        comment = Comment(
+            content=data['content'],
+            blog_id=blog_id,
+            user_id=user_id
+        )
+        saved_comment = db.add('Comment', comment)
+        if not saved_comment:
+            return jsonify({'message': 'Failed to add comment'})
+    except Exception as e:
+        print('Exception occured: ', e)
+        return jsonify({'message': 'An error occured'})
+    return jsonify(saved_comment.to_dict())
 
 
 @app_views.route('/blogs/<blog_id>/comments/<comment_id>', methods=['GET'], strict_slashes=False)
 def show_comment(blog_id, comment_id):
-    comment = db.get_by_id(Comment, comment_id)
+    comment = db.get_by_field('Comment', 'id', comment_id)
     if not comment:
         return jsonify({'message': 'Comment not found'}), 404
     return jsonify(comment.to_dict())
@@ -93,21 +104,19 @@ def show_comment(blog_id, comment_id):
 @app_views.route('/blogs/<blog_id>/comments/<comment_id>', methods=['PUT'], strict_slashes=False)
 @token_required
 def update_comment(blog_id, comment_id):
-    comment = db.get_by_id(Comment, comment_id)
+    comment = db.get_by_field('Comment', 'id', comment_id)
     if not comment:
         return jsonify({'message': 'Comment not found'}), 404
     data = request.get_json()
-    for key, value in data.items():
-        setattr(comment, key, value)
-    db.save()
-    return jsonify(comment.to_dict())
+    db.update('Comment', comment_id, **data)
+    return jsonify({'message': 'Updated successfully'})
 
 
 @app_views.route('/blogs/<blog_id>/comments/<comment_id>', methods=['DELETE'], strict_slashes=False)
 @token_required
 def delete_comment(blog_id, comment_id):
-    comment = db.get_by_id(Comment, comment_id)
+    comment = db.get_by_field('Comment', 'id', comment_id)
     if not comment:
         return jsonify({'message': 'Comment not found'}), 404
-    db.delete(comment)
+    db.delete('Comment', comment_id)
     return jsonify({}), 200

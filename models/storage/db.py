@@ -67,7 +67,7 @@ class DB:
             model_class = self._get_model(model_name)
             if not isinstance(instance, model_class):
                 raise ValueError(f"Instance must be of type {model_class.__name__}")
-                
+
             session = self._Session()
             session.add(instance)
            # session.flush()
@@ -103,25 +103,44 @@ class DB:
         finally:
             session.close()
 
-    def get_all_by_field(self, model_name: str, field_name: str, value: Any) -> List[BaseModel]:
-        """Retrieve all instances matching a field value"""
+    def get_session(self):
+        """gets session (avoid detachment issues)"""
+        session = self._Session()
+        return session
+
+    def get_all_by_field(self, model_name: str, field_name: str,
+                          value: Any, 
+                          related_field: Optional[str] = None) -> List[BaseModel]:
+     
+        """Retrieve all instances matching a field value or a foreign key relationship"""
         try:
             model_class = self._get_model(model_name)
             session = self._Session()
             
+        # Check if the model has the given field
             if not hasattr(model_class, field_name):
                 raise ValueError(f"Field {field_name} not found in model {model_name}")
-                
-            instances = session.query(model_class).filter(
-                getattr(model_class, field_name) == value
-            ).all()
-            return instances
             
+            # If the field is a foreign key, check if it's related to another model
+            if related_field:
+                related_model = self._get_model(related_field)
+                instances = session.query(model_class).filter(
+                    getattr(model_class, field_name) == value
+                ).join(related_model).all()
+            else:
+                # If no related field, just filter by the field_name value
+                instances = session.query(model_class).filter(
+                    getattr(model_class, field_name) == value
+                ).all()
+
+            return instances
+
         except (SQLAlchemyError, Exception) as e:
             return []
-            
+
         finally:
             session.close()
+
 
     def update(self, model_name: str, instance_id: str, **kwargs) -> bool:
         """Update an instance with provided fields"""
