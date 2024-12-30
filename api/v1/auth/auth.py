@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from os import getenv
 
 JWT_SECRET = getenv('JWT_SECRET')
-JWT_ALGORITHM = 'HS256'
+JWT_ALGORITHM = getenv('JWT_ALGORITHM', 'HS256')
 JWT_EXPIRATION_HOURS = 24
 
 def create_token(user_id: str) -> str:

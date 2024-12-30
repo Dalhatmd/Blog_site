@@ -44,7 +44,8 @@ def home():
     blogs = db.get_all('Blog')
     blogs_dict = [blog.to_dict() for blog in blogs]
     for blog in blogs_dict:
-        blog['username'] = db.get_by_field('User', 'username', blog['user_id'])
+        user = db.get_by_field('User', 'id', blog['user_id'])
+        blog['username'] = user.username
     return render_template('blogs.html', blogs=blogs_dict)
 
 
