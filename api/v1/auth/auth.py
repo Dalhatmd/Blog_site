@@ -48,7 +48,7 @@ def token_required(f):
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Invalid token'}), 401
         except jwt.InvalidTokenError:
-            return jsonify({'message': 'Invalid Token'})
+            return jsonify({'message': 'Invalid Token'}), 401
         
         return f(*args, **kwargs)
     return decorated
