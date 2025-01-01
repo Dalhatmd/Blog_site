@@ -11,7 +11,7 @@
         {% for blog in blogs %}
             <li>
                 <h2><a href="/blogs/{{ blog.id }}">{{ blog.title }}</a></h2>
-                <small>posted on: {{ blog.formatted_time }}</small>
+                <small>posted on: {{ blog.formatted_date }}</small>
                 <small>Blog by: {{ blog.username }}</small>
             </li>
         {% endfor %}

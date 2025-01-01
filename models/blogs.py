@@ -4,6 +4,7 @@ from datetime import datetime
 from uuid import uuid4
 from models.base_model import BaseModel
 
+
 class Blog(BaseModel):
     """Blog class for SQLAlchemy"""
     __tablename__ = 'blogs'
@@ -37,11 +38,13 @@ class Blog(BaseModel):
     
     def to_dict(self) -> dict:
         """Return dictionary representation of Blog"""
+        self.formatted_date = self.created_at.strftime('%B %d')
         return {
             'id': self.id,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
             'title': self.title,
             'content': self.content,
-            'user_id': self.user_id
+            'user_id': self.user_id,
+            'formatted_date': self.formatted_date
         }
