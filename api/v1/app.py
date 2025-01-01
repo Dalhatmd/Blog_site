@@ -44,15 +44,15 @@ def index():
 
 @app.route('/home')
 def home():
-    blogs = db.get_all('Blog')
-    blogs_dict = [blog.to_dict() for blog in blogs]
-    for blog in blogs_dict:
-        user = db.get_by_field('User', 'id', blog['user_id'])
-        blog['username'] = user.username
-        created_at = datetime.strptime(blog['created_at'], '%Y-%m-%dT%H:%M:%S')
-        blog['formatted_time'] = created_at.strftime('%B %d')
-    
-    return render_template('blogs.html', blogs=blogs_dict)
+    response = requests.get(f'{api_url}/blogs')
+    if response.status_code == 200:
+        blogs=response.json()
+        for blog in blogs:
+            user = db.get_by_field('User', 'id', blog['user_id'])
+            blog['username'] = user.username
+        return render_template('blogs.html', blogs=blogs)
+    elif response.status_code == 404:
+        return render_template('404.html')
 
 @app.route('/blogs/<blog_id>')
 def get_blog(blog_id):
