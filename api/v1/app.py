@@ -3,6 +3,8 @@ from flask_cors import CORS
 from api.v1.views import app_views
 from os import getenv
 from models.storage.db import DB
+from datetime import datetime
+import requests
 
 
 db = DB()
@@ -10,6 +12,7 @@ db = DB()
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+api_url = 'http://127.0.0.1:5000/api/v1'
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -46,8 +49,22 @@ def home():
     for blog in blogs_dict:
         user = db.get_by_field('User', 'id', blog['user_id'])
         blog['username'] = user.username
+        created_at = datetime.strptime(blog['created_at'], '%Y-%m-%dT%H:%M:%S')
+        blog['formatted_time'] = created_at.strftime('%B %d')
+    
     return render_template('blogs.html', blogs=blogs_dict)
 
+@app.route('/blogs/<blog_id>')
+def get_blog(blog_id):
+    response  = requests.get(f'{api_url}/blogs/{blog_id}')
+    if response.status_code == 404:
+        return render_template('404.html'), 404
+    if response.status_code != 200:
+        return render_template('error.html'), response.status_code
+
+    blog = response.json()
+    return render_template('blog_detail.html', blog=blog)
+    
 
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')

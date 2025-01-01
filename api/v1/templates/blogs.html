@@ -10,9 +10,8 @@
     <ul>
         {% for blog in blogs %}
             <li>
-                <h2>{{ blog.title }}</h2>
-                <p>{{ blog.content }}</p>
-                <small>Created at: {{ blog.created_at }}</small>
+                <h2><a href="/blogs/{{ blog.id }}">{{ blog.title }}</a></h2>
+                <small>posted on: {{ blog.formatted_time }}</small>
                 <small>Blog by: {{ blog.username }}</small>
             </li>
         {% endfor %}
