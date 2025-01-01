@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/blog_detail_styles.css') }}">
+
     <title>{{ blog.title }}</title>
 </head>
 <body>
@@ -20,41 +22,22 @@
             </div>
         </article>
 
-        <a href="/" class="back-link">← Back to all blogs</a>
+        <section class="comments">
+            <h2>Comments</h2>
+            {% if comments %}
+            {% for comment in comments %}
+                <div class="comment">
+                    <p>{{ comment.content }}</p>
+                    <small>By: {{ comment.username }}</small>
+                    <small>At: {{ comment.created_at }}</small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No comments yet.</p>
+        {% endif %}
+        </section>
+
+        <a href="/home" class="back-link">← Back to all blogs</a>
     </main>
-
-    <style>
-        main {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .blog-metadata {
-            margin: 20px 0;
-            color: #666;
-        }
-
-        .blog-metadata small {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .blog-content {
-            line-height: 1.6;
-            margin: 30px 0;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
 </body>
 </html>

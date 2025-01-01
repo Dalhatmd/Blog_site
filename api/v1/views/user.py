@@ -3,6 +3,7 @@ from api.v1.views import app_views
 from models.storage.db import DB
 from ..auth.auth import create_token, token_required
 from models.user import User
+from models.blogs import Blog
 
 
 db = DB()
@@ -85,4 +86,4 @@ def get_me():
     if not user:
         return jsonify({'messsage': 'User not found'}), 404
     
-    return jsonify({'User': user.username})
+    return jsonify({user.to_dict})

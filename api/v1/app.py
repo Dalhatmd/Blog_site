@@ -1,9 +1,10 @@
-from flask import Flask, jsonify, request, abort, render_template
+from flask import (Flask,jsonify,
+                   request, render_template,
+                   url_for, redirect)
 from flask_cors import CORS
 from api.v1.views import app_views
 from os import getenv
 from models.storage.db import DB
-from datetime import datetime
 import requests
 
 
@@ -62,8 +63,43 @@ def get_blog(blog_id):
     if response.status_code != 200:
         return render_template('error.html'), response.status_code
 
+    comments_response = requests.get(f'{api_url}/blogs/{blog_id}/comments')
+    if comments_response.status_code != 200:
+        comments = []
+    else:
+        comments = comments_response.json()
+
     blog = response.json()
-    return render_template('blog_detail.html', blog=blog)
+    user = db.get_by_field('User', 'id', blog['user_id'])
+    blog['username'] = user.username
+    print(blog['username'])
+    if not blog['username']:
+        blog['username'] = user.email
+        print(blog['username'])
+    return render_template('blog_detail.html', blog=blog, comments=comments)
+    
+@app.route('/blogs/new')
+def post_blog():
+    token = request.headers.get('Authorization')
+    print(token)
+    if not token:
+        return jsonify({'message': 'Token required'}), 401
+    
+    title = request.form['title']
+    content = request.form['content']
+    blog_data = {
+        'title': title,
+        'content': content
+    }
+
+    response = requests.post(
+        f"{api_url}/blogs",
+        headers={'Authorization': token},
+        json=blog_data
+    )
+    if response.status_code == 201:
+        return redirect(url_for('home'))
+    return jsonify({'message': 'failed to create Blog'}), response.status_code
     
 
 if __name__ == "__main__":
