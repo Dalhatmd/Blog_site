@@ -78,15 +78,20 @@ def get_blog(blog_id):
         print(blog['username'])
     return render_template('blog_detail.html', blog=blog, comments=comments)
     
-@app.route('/blogs/new')
+@app.route('/blogs/new', methods=['GET'])
 def post_blog():
-    token = request.headers.get('Authorization')
-    print(token)
-    if not token:
+    return render_template('blog_form.html')
+    """token = request.headers.get('Authorization')
+    if not token or not token.startswith('Bearer '):
         return jsonify({'message': 'Token required'}), 401
     
-    title = request.form['title']
-    content = request.form['content']
+    token = token.split(' ')[1]
+    title = request.json.get('title')
+    content = request.json.get('content')
+
+    if not title or not content:
+        return jsonify({'message': 'Title and content of blog required'}), 400
+    
     blog_data = {
         'title': title,
         'content': content
@@ -94,12 +99,12 @@ def post_blog():
 
     response = requests.post(
         f"{api_url}/blogs",
-        headers={'Authorization': token},
+        headers={'Authorization': f'Bearer {token}'},
         json=blog_data
     )
     if response.status_code == 201:
         return redirect(url_for('home'))
-    return jsonify({'message': 'failed to create Blog'}), response.status_code
+    """"""return jsonify({'message': 'failed to create Blog'}), response.status_code"""
     
 
 if __name__ == "__main__":
