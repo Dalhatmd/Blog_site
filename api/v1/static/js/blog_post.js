@@ -4,8 +4,7 @@ $(document).ready(function() {
 
         const token = localStorage.getItem('token');
         if (!token) {
-            window.location.href = '/login';
-            return;
+            window.location.href = '/';
         }
 
         $.ajax({

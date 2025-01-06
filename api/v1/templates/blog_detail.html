@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/blog_detail_styles.css') }}">
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/blog_page.js') }}" defer></script>
     <title>{{ blog.title }}</title>
 </head>
 <body>
@@ -23,7 +24,10 @@
         </article>
 
         <section class="comments">
+            
             <h2>Comments</h2>
+            <label for="comment">Add comment</label>
+            <textarea id="comment" name="'comment"></textarea>
             {% if comments %}
             {% for comment in comments %}
                 <div class="comment">

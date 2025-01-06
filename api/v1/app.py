@@ -7,7 +7,6 @@ from os import getenv
 from models.storage.db import DB
 import requests
 
-
 db = DB()
 
 app = Flask(__name__)
@@ -81,31 +80,10 @@ def get_blog(blog_id):
 @app.route('/blogs/new', methods=['GET'])
 def post_blog():
     return render_template('blog_form.html')
-    """token = request.headers.get('Authorization')
-    if not token or not token.startswith('Bearer '):
-        return jsonify({'message': 'Token required'}), 401
-    
-    token = token.split(' ')[1]
-    title = request.json.get('title')
-    content = request.json.get('content')
 
-    if not title or not content:
-        return jsonify({'message': 'Title and content of blog required'}), 400
-    
-    blog_data = {
-        'title': title,
-        'content': content
-    }
-
-    response = requests.post(
-        f"{api_url}/blogs",
-        headers={'Authorization': f'Bearer {token}'},
-        json=blog_data
-    )
-    if response.status_code == 201:
-        return redirect(url_for('home'))
-    """"""return jsonify({'message': 'failed to create Blog'}), response.status_code"""
-    
+@app.route('/login', methods=['GET'])
+def login():
+    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
