@@ -16,6 +16,7 @@
     <div class="container">
         <div class="profile-card">
             <h2>My Profile</h2>
+            <a href="/user/blogs">My blogs</a>
             <div id="loading" class="loading">Loading...</div>
             <div id="error" class="error" style="display: none;"></div>
             <div id="profile" style="display: none;"></div>
@@ -24,6 +25,7 @@
 
     <script>
         $(document).ready(function() {
+            let userId;
             $.ajax({
                 url: '/api/v1/me',
                 headers: {
@@ -32,6 +34,15 @@
                 success: function(data) {
                     $('#loading').hide();
                     $('#profile').show();
+                    
+                   // const userId = data.id || data.user_id || data;
+                    //localStorage.setItem('userId', userId);
+                    //console.log("Stored userId:", userId);
+                    console.log('Input data', data);
+
+                    const email = data.Email;
+                    localStorage.setItem('email', email);
+                    console.log('Stored email', email);
                     
                     Object.entries(data).forEach(([key, value]) => {
                         $('#profile').append(`

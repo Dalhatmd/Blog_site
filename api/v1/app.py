@@ -89,6 +89,10 @@ def login():
 def get_profile():
     return render_template('profile_page.html')
 
+@app.route('/user/blogs', methods=['GET'])
+def user_blogs():
+    return render_template('user_blogs.html')
+
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
     port = getenv('BLOG_PORT', '5000')

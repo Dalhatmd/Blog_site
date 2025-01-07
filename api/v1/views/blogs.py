@@ -121,6 +121,13 @@ def delete_comment(blog_id, comment_id):
     db.delete('Comment', comment_id)
     return jsonify({}), 200
 
-@app_views.route('/<user_id>/blogs', methods=['GET'])
-def get_user_blogs(user_id):
-    session = db.get_session()
+@app_views.route('/<email>/blogs', methods=['GET'])
+def get_user_blogs(email):
+    user = db.get_by_field('User', 'email', email)
+    if not user:
+        return jsonify({'message': 'User not found'})
+    user_id = user.id
+    blogs = db.get_all_by_field('Blog', 'user_id', user_id)
+    if not blogs:
+        return jsonify({'message': 'No Blogs found \n Get started now'}), 404
+    return jsonify([blog.to_dict() for blog in blogs])
