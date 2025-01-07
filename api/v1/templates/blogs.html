@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/blogs.css') }}">
     <title>Home</title>
 </head>
 <body>
     <h1>Blogs</h1>
-    <a href="/blogs/new">Post Blog</a>
+    <a href="/blogs/new" class="new-blog-link">Post Blog</a>
     <ul>
         {% for blog in blogs %}
             <li>
