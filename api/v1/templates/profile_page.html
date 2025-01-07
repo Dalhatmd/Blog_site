@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        .container { max-width: 600px; margin: 40px auto; padding: 20px; }
+        .profile-card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; padding: 20px; }
+        .field { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .field-label { font-weight: bold; width: 30%; display: inline-block; }
+        .loading { text-align: center; padding: 20px; }
+        .error { color: red; text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-card">
+            <h2>My Profile</h2>
+            <div id="loading" class="loading">Loading...</div>
+            <div id="error" class="error" style="display: none;"></div>
+            <div id="profile" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: '/api/v1/me',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                success: function(data) {
+                    $('#loading').hide();
+                    $('#profile').show();
+                    
+                    Object.entries(data).forEach(([key, value]) => {
+                        $('#profile').append(`
+                            <div class="field">
+                                <span class="field-label">${key.replace('_', ' ')}</span>
+                                <span>${value}</span>
+                            </div>
+                        `);
+                    });
+                },
+                error: function(xhr) {
+                    $('#loading').hide();
+                    $('#error').show().text('Error loading profile: ' + xhr.responseJSON?.message || 'Unknown error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

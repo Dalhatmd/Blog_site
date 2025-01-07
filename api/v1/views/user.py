@@ -86,4 +86,4 @@ def get_me():
     if not user:
         return jsonify({'messsage': 'User not found'}), 404
     
-    return jsonify({user.to_dict})
+    return jsonify(user.to_dict()), 201

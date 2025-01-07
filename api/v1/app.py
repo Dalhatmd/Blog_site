@@ -85,6 +85,10 @@ def post_blog():
 def login():
     return redirect(url_for('home'))
 
+@app.route('/profile', methods=['GET'])
+def get_profile():
+    return render_template('profile_page.html')
+
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
     port = getenv('BLOG_PORT', '5000')

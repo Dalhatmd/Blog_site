@@ -80,3 +80,10 @@ class User(BaseModel):
             return "{}".format(self.last_name)
         else:
             return "{} {}".format(self.first_name, self.last_name)
+
+    def to_dict(self) -> dict:
+        """ dictionary representation of user"""
+        return {
+            'Username': self.username,
+            'Email': self.email
+        }

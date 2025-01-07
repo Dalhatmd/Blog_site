@@ -120,3 +120,7 @@ def delete_comment(blog_id, comment_id):
         return jsonify({'message': 'Comment not found'}), 404
     db.delete('Comment', comment_id)
     return jsonify({}), 200
+
+@app_views.route('/<user_id>/blogs', methods=['GET'])
+def get_user_blogs(user_id):
+    session = db.get_session()
