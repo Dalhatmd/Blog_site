@@ -3,20 +3,8 @@
 <head>
     <title>User Blogs</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <style>
-        .container { max-width: 800px; margin: 40px auto; padding: 20px; }
-        .blog-card { 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-            border-radius: 8px; 
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .blog-title { font-size: 1.5em; margin-bottom: 10px; }
-        .blog-meta { color: #666; font-size: 0.9em; margin-bottom: 10px; }
-        .blog-content { line-height: 1.6; }
-        .loading { text-align: center; padding: 20px; }
-        .error { color: red; text-align: center; padding: 20px; }
-    </style>
+    <script src="{{ url_for('static', filename='js/user_blogs.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_blogs.css') }}">
 </head>
 <body>
     <div class="container">
@@ -25,44 +13,5 @@
         <div id="error" class="error" style="display: none;"></div>
         <div id="blogs"></div>
     </div>
-
-    <script>
-        const email = localStorage.getItem('email');
-        console.log(email);
-        
-        $(document).ready(function() {
-            $.ajax({
-                url: `/api/v1/${email}/blogs`,
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                },
-                success: function(blogs) {
-                    $('#loading').hide();
-                    
-                    if (blogs.length === 0) {
-                        $('#blogs').html('<p>No blogs found</p>');
-                        return;
-                    }
-
-                    blogs.forEach(blog => {
-                        $('#blogs').append(`
-                            <div class="blog-card">
-                                <div class="blog-title">${blog.title}</div>
-                                <div class="blog-meta">
-                                    Posted on: ${new Date(blog.created_at).toLocaleDateString()}
-                                </div>
-                                <div class="blog-content">${blog.content}</div>
-                            </div>
-                        `);
-                    });
-                },
-                error: function(xhr) {
-                    $('#loading').hide();
-                    $('#error').show().text('Error loading blogs: ' + 
-                        xhr.responseJSON?.message || 'Unknown error');
-                }
-            });
-        });
-    </script>
 </body>
 </html>

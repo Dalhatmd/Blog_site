@@ -3,14 +3,8 @@
 <head>
     <title>User Profile</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <style>
-        .container { max-width: 600px; margin: 40px auto; padding: 20px; }
-        .profile-card { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; padding: 20px; }
-        .field { padding: 10px 0; border-bottom: 1px solid #eee; }
-        .field-label { font-weight: bold; width: 30%; display: inline-block; }
-        .loading { text-align: center; padding: 20px; }
-        .error { color: red; text-align: center; padding: 20px; }
-    </style>
+    <script src="{{ url_for('static', filename='js/profile_page.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_page.css')}}">
 </head>
 <body>
     <div class="container">
@@ -22,43 +16,5 @@
             <div id="profile" style="display: none;"></div>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            let userId;
-            $.ajax({
-                url: '/api/v1/me',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                },
-                success: function(data) {
-                    $('#loading').hide();
-                    $('#profile').show();
-                    
-                   // const userId = data.id || data.user_id || data;
-                    //localStorage.setItem('userId', userId);
-                    //console.log("Stored userId:", userId);
-                    console.log('Input data', data);
-
-                    const email = data.Email;
-                    localStorage.setItem('email', email);
-                    console.log('Stored email', email);
-                    
-                    Object.entries(data).forEach(([key, value]) => {
-                        $('#profile').append(`
-                            <div class="field">
-                                <span class="field-label">${key.replace('_', ' ')}</span>
-                                <span>${value}</span>
-                            </div>
-                        `);
-                    });
-                },
-                error: function(xhr) {
-                    $('#loading').hide();
-                    $('#error').show().text('Error loading profile: ' + xhr.responseJSON?.message || 'Unknown error');
-                }
-            });
-        });
-    </script>
 </body>
 </html>

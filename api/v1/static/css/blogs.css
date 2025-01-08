@@ -36,10 +36,28 @@ h1 {
     transition: all 0.2s ease;
 }
 
+.profile-page {
+     display: inline-block;
+    text-decoration: none;
+    color: #2c3e50;
+    background-color: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border: 2px solid #2c3e50;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    transition: all 0.2s ease;
+}
+
 .new-blog-link:hover {
     background-color: #2c3e50;
     color: white;
 }
+
+.profile-page:hover {
+    background-color: #2c3e50;
+    color: white;
+}
+
 
 /* Blog list */
 ul {
