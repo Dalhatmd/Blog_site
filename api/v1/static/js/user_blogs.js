@@ -18,10 +18,18 @@ $(document).ready(function() {
             blogs.forEach(blog => {
                 $('#blogs').append(`
                     <div class="blog-card">
-                        <div class="blog-title"><a href=/blogs/${blog.id}>${blog.title}</a></div>
+                        <div class="blog-title">
+                            <a href=/blogs/${blog.id}>${blog.title}</a>
+                        </div>
                         <div class="blog-meta">
                             Posted on: ${blog.formatted_date}
                         </div>
+                        <button 
+                            class="edit-button" 
+                            onclick="window.location.href='/blogs/${blog.id}/edit'"
+                        >
+                            Edit
+                        </button>
                     </div>
                 `);
             });

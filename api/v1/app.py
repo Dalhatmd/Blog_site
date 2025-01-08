@@ -93,6 +93,10 @@ def get_profile():
 def user_blogs():
     return render_template('user_blogs.html')
 
+@app.route('/blogs/<blog_id>/edit', methods=['GET'])
+def edit_blog(blog_id):
+    return render_template('edit_blog.html', blog_id=blog_id)
+
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
     port = getenv('BLOG_PORT', '5000')

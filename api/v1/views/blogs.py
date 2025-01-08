@@ -40,7 +40,7 @@ def show_blog(blog_id):
 
 @app_views.route('/blogs/<blog_id>', methods=['PUT'], strict_slashes=False)
 @token_required
-def update_blog(blog_id):
+def update_blog1(blog_id):
     data = request.get_json()
     if not data:
         return jsonify({'Error': 'data not provided'}), 400
@@ -131,3 +131,40 @@ def get_user_blogs(email):
     if not blogs:
         return jsonify({'message': 'No Blogs found \n Get started now'}), 404
     return jsonify([blog.to_dict() for blog in blogs])
+
+@app_views.route('/<email>/blogs/<blog_id>', methods=['PUT'])
+def update_blog(email, blog_id):
+    user = db.get_by_field('User', 'email', email)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    blog = db.get_by_field('Blog', 'id', blog_id)
+    if not blog:
+        return jsonify({'message': 'Blog not found'}), 404
+    
+    if blog.user_id != user.id:
+        return jsonify({'message': 'Unauthorized to edit this blog'}), 400
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({'message': 'No data provided'}), 400
+    
+    update_data = {
+        'title': data.get('title', blog.title),
+        'content': data.get('content', blog.content)
+    }
+
+    db.update('Blog', blog_id, **update_data)
+    return jsonify({'message': 'Blog updated successfully'})
+
+@app_views.route('/<email>/blogs/<blog_id>', methods=['GET'])
+def get_user_blog(email, blog_id):
+    user = db.get_by_field('User', 'email', email)
+    if not user:
+        return jsonify({'message': 'User not found'})
+    blog = db.get_by_field('Blog', 'id', blog_id)
+    if not blog:
+        return jsonify({'messsage': 'Blog not found'})
+    
+    if blog.user_id != user.id:
+        return jsonify({'message': 'Not authorized to edit this Blog'})
+    return jsonify(blog.to_dict())
