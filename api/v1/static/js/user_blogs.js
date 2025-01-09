@@ -1,7 +1,6 @@
 const email = localStorage.getItem('email');
 console.log(email);
 
-
 function deleteBlog(blogId) {
     console.log('Deleting Blog with Blog Id', blogId)
     if (confirm('Are you sure you want to delete?')) {
