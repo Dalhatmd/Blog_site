@@ -1,6 +1,22 @@
 const email = localStorage.getItem('email');
 console.log(email);
-        
+
+
+function deleteBlog(blogId) {
+    console.log('Deleting Blog with Blog Id', blogId)
+    if (confirm('Are you sure you want to delete?')) {
+        $.ajax({
+            url: `/api/v1/${email}/blogs/${blogId}`,
+            type: 'DELETE',
+            success: function() {
+                $(`#blogs .blog-card:has(a[href="/blogs/${blogId}"])`).remove();
+            },
+            error: function(xhr, status, error) {
+                alert('Error deleting blog: ' + error);
+            }
+        });
+    }
+}
 $(document).ready(function() {
     $.ajax({
         url: `/api/v1/${email}/blogs`,
@@ -30,10 +46,17 @@ $(document).ready(function() {
                         >
                             Edit
                         </button>
+                        <button
+                            class="delete-button"
+                            onclick="deleteBlog('${blog.id}')"
+                        >
+                            Delete
+                        </button>
                     </div>
                 `);
             });
         },
+
         error: function(xhr) {
             $('#loading').hide();
             $('#error').show().text('Error loading blogs: ' + 

@@ -49,7 +49,7 @@ def update_blog1(blog_id):
 
 @app_views.route('/blogs/<blog_id>', methods=['DELETE'], strict_slashes=False)
 @token_required
-def delete_blog(blog_id):
+def delete_blog1(blog_id):
     blog = db.get_by_field('Blog', 'id', blog_id)
     if not blog:
         return jsonify({'message': 'Blog not found'}), 404
@@ -168,3 +168,18 @@ def get_user_blog(email, blog_id):
     if blog.user_id != user.id:
         return jsonify({'message': 'Not authorized to edit this Blog'})
     return jsonify(blog.to_dict())
+
+@app_views.route('/<email>/blogs/<blog_id>', methods=['DELETE'])
+def delete_blog(email, blog_id):
+    user = db.get_by_field('User', 'email', email)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    blog = db.get_by_field('Blog', 'id', blog_id)
+    if not blog:
+        return jsonify({'message': 'Blog not found'}), 404
+    
+    if blog.user_id != user.id:
+        return jsonify({'message': 'Unauthorized to delete this blog'}), 400
+    
+    db.delete('Blog', blog_id)
+    return jsonify({}), 200
