@@ -5,8 +5,11 @@ from api.v1.views import app_views
 from ..auth.auth import token_required
 from models.comments import Comment
 from sqlalchemy.orm import joinedload
+from models.cache import BlogCache
+from models.cache import cache_blog_read
 
 
+cache = BlogCache()
 db = DB()
 
 @app_views.route('/blogs', methods=['GET'], strict_slashes=False)
@@ -29,9 +32,12 @@ def create_blog():
         user_id=input_user_id
     )
     saved_blog = db.add('Blog', blog)
+    cache.add_recent_blog(saved_blog)
     return jsonify(saved_blog.to_dict()), 201
 
 @app_views.route('/blogs/<blog_id>', methods=['GET'], strict_slashes=False)
+@token_required
+@cache_blog_read
 def show_blog(blog_id):
     blog = db.get_by_field('Blog', 'id', blog_id)
     if not blog:
@@ -67,6 +73,16 @@ def show_comments(blog_id):
     if not comments:
         return jsonify({})
     return jsonify([comment.to_dict() for comment in comments])
+
+@app_views.route('/blogs/recent', methods=['GET'], strict_slashes=False)
+def get_recent_blogs():
+    return jsonify(cache.get_recent_blogs())
+
+@app_views.route('/blogs/my-recent-reads', methods=['GET'], strict_slashes=False)
+@token_required
+def get_my_recent_reads():
+    return jsonify(cache.get_user_recent_reads(request.user_id))
+
 
 @app_views.route('/blogs/<blog_id>/comments', methods=['POST'], strict_slashes=False)
 @token_required
