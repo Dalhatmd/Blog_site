@@ -3,6 +3,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import hashlib
 from models.base_model import BaseModel
+from werkzeug.utils import secure_filename
+from os import makedirs
+from datetime import datetime
+import os
 
 
 class User(BaseModel):
@@ -18,9 +22,13 @@ class User(BaseModel):
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
     username = Column(String(128), nullable=True, unique=True)
+    profile_picture = Column(String(255), nullable=True)
 
     blogs = relationship("Blog", back_populates="user", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
+
+    UPLOAD_FOLDER = 'api/v1/static/profile_pictures'
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
     def __init__(self, *args: list, **kwargs: dict):
         """ Initialize a User instance
@@ -37,9 +45,52 @@ class User(BaseModel):
         if kwargs.get('updated_at') is None:
             self.updated_at = datetime.now()
 
+        makedirs(self.UPLOAD_FOLDER, exist_ok=True)
+
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
+
+    def allowed_file(self, filename):
+        """check if file xtension is supported"""
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in self.ALLOWED_EXTENSIONS
+
+    def upload_profile_picture(self, file):
+        """ handles profile picture upload"""
+        if file and self.allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            unique_filename = f"{self.id}_{filename}"
+
+            filepath = os.path.join(self.UPLOAD_FOLDER, unique_filename)
+            file.save(filepath)
+
+            self.profile_picture = unique_filename
+            self.updated_at = datetime.now()
+
+            return True
+        return False
+    
+    def get_profile_picture_url(self):
+        """Get the url for profile picture"""
+        if self.profile_picture:
+            return f"/{self.UPLOAD_FOLDER}/{self.profile_picture}"
+        return "/static/default_profile.png"
+
+    def delete_profile_picture(self):
+        """Delete the current picture"""
+        if self.profile_picture:
+            try:
+                filepath = os.path.join(self.UPLOAD_FOLDER, self.profile_picture)
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                self.profile_picture = None
+                self.updated_at - datetime.now()
+                return True
+            except Exception as e:
+                print(f"error delein profile picture: {e}")
+                return False
+            return False
 
     @property
     def password(self) -> str:
@@ -85,5 +136,6 @@ class User(BaseModel):
         """ dictionary representation of user"""
         return {
             'Username': self.username,
-            'Email': self.email
+            'Email': self.email,
+            'Profile_picture': self.get_profile_picture_url()
         }

@@ -87,3 +87,27 @@ def get_me():
         return jsonify({'messsage': 'User not found'}), 404
     
     return jsonify(user.to_dict()), 201
+
+@app_views.route('/upload_profile_picture', methods=['POST'])
+@token_required
+def upload_profile_pictures():
+    if 'file' not in request.files:
+        return jsonify({'Error': 'No file provided'}), 400
+    
+    session = db.get_session()
+    file = request.files['file']
+    
+    # Check if a file was actually selected
+    if file.filename == '':
+        return jsonify({'Error': 'No file selected'}), 400
+    
+    user = db.get_by_field('User', 'id', request.user_id)
+    
+    if user.upload_profile_picture(file):
+        session.commit()  # Move commit after successful upload
+        return jsonify({
+            'message': 'Profile picture updated successfully',
+            'url': user.get_profile_picture_url()
+        })
+    
+    return jsonify({'error': 'Invalid file type'}), 400

@@ -64,6 +64,10 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .webassets-cache
+# Ignore all files in profile_pictures directory
+api/v1/static/profile_pictures/*
+# But keep the directory itself by not ignoring .gitkeep
+!api/v1/static/profile_pictures/.gitkeep
 
 # Scrapy stuff:
 .scrapy
