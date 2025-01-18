@@ -111,3 +111,12 @@ def upload_profile_pictures():
         })
     
     return jsonify({'error': 'Invalid file type'}), 400
+
+@app_views.route('/get_profile_picture', methods=['GET'])
+@token_required
+def get_user_profile_picture():
+    user = db.get_by_field('User', 'id', request.user_id)
+    if not user:
+        return jsonify({'Error': 'An derror occured'})
+    user_details = user.to_dict()
+    return jsonify({'Profile_pic': user_details.get('Profile_picture', None)})
