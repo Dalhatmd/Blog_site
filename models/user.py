@@ -27,7 +27,7 @@ class User(BaseModel):
     blogs = relationship("Blog", back_populates="user", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
 
-    UPLOAD_FOLDER = 'api/v1/static/profile_pictures'
+    UPLOAD_FOLDER = '/api/static/profile_pictures'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
     def __init__(self, *args: list, **kwargs: dict):
@@ -74,8 +74,11 @@ class User(BaseModel):
     def get_profile_picture_url(self):
         """Get the url for profile picture"""
         if self.profile_picture:
-            return f"/{self.UPLOAD_FOLDER}/{self.profile_picture}"
-        return "/static/default_profile.png"
+            url = self.profile_picture.lstrip('/')
+            print(self.profile_picture)
+            return self.profile_picture
+        else:
+            return "/api/v1/static/default.jpeg"
 
     def delete_profile_picture(self):
         """Delete the current picture"""
@@ -88,7 +91,7 @@ class User(BaseModel):
                 self.updated_at - datetime.now()
                 return True
             except Exception as e:
-                print(f"error delein profile picture: {e}")
+                print(f"error deleting profile picture: {e}")
                 return False
             return False
 

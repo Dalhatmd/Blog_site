@@ -104,19 +104,21 @@ def upload_profile_pictures():
     user = db.get_by_field('User', 'id', request.user_id)
     
     if user.upload_profile_picture(file):
-        session.commit()  # Move commit after successful upload
+        db.update('User', user.id, profile_picture=user.get_profile_picture_url())
         return jsonify({
             'message': 'Profile picture updated successfully',
-            'url': user.get_profile_picture_url()
+            'url': user.get_profile_picture_url(),
+            'username': user.username
         })
     
     return jsonify({'error': 'Invalid file type'}), 400
 
-@app_views.route('/get_profile_picture', methods=['GET'])
+@app_views.route('/get_profile_picture', methods=['GET'], strict_slashes=False)
 @token_required
 def get_user_profile_picture():
     user = db.get_by_field('User', 'id', request.user_id)
     if not user:
-        return jsonify({'Error': 'An derror occured'})
-    user_details = user.to_dict()
-    return jsonify({'Profile_pic': user_details.get('Profile_picture', None)})
+        return jsonify({'Error': 'An error occured'})
+    return jsonify({
+        'profile_pic': user.get_profile_picture_url(),
+        'username': user.username})

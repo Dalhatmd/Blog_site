@@ -58,7 +58,7 @@ class BlogCache:
         """Get list of recently read blogs for specific user"""
         if not user_id:
             return []
-            
+
         user_reads_key = self._get_user_reads_key(user_id)
         blogs = self.redis_client.lrange(user_reads_key, 0, -1)
         return [self.deserialize_blog(blog) for blog in blogs]
