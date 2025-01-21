@@ -105,10 +105,10 @@ def upload_profile_pictures():
     
     if user.upload_profile_picture(file):
         db.update('User', user.id, profile_picture=user.get_profile_picture_url())
+        print(profile_picture)
         return jsonify({
             'message': 'Profile picture updated successfully',
-            'url': user.get_profile_picture_url(),
-            'username': user.username
+            'url': user.get_profile_picture_url()
         })
     
     return jsonify({'error': 'Invalid file type'}), 400
@@ -122,3 +122,9 @@ def get_user_profile_picture():
     return jsonify({
         'profile_pic': user.get_profile_picture_url(),
         'username': user.username})
+
+@app_views.route('/update_user_details', methods=['PUT'])
+@token_required
+def update_user_details():
+    data = request.json()
+    db.update('User', request.user_id, **data)

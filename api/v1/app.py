@@ -97,6 +97,10 @@ def user_blogs():
 def edit_blog(blog_id):
     return render_template('edit_blog.html', blog_id=blog_id)
 
+@app.route('/edit_user', methods=['GET'])
+def edit_user():
+    return render_template('edit_user.html')
+
 if __name__ == "__main__":
     host = getenv('BLOG_HOST', '0.0.0.0')
     port = getenv('BLOG_PORT', '5000')

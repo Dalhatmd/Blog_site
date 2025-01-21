@@ -70,4 +70,8 @@ $(document).ready(function() {
             $('#error').show().text('Error loading profile: ' + xhr.responseJSON?.message || 'Unknown error');
         }
     });
+    $('.edit-info').on('click', () => {
+        console.log('clicked');
+        window.location.href = '/edit_user';
+    });
 });
