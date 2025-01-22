@@ -36,8 +36,6 @@ def create_blog():
     return jsonify(saved_blog.to_dict()), 201
 
 @app_views.route('/blogs/<blog_id>', methods=['GET'], strict_slashes=False)
-@token_required
-@cache_blog_read
 def show_blog(blog_id):
     blog = db.get_by_field('Blog', 'id', blog_id)
     if not blog:

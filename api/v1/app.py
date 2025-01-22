@@ -68,6 +68,8 @@ def get_blog(blog_id):
     else:
         comments = comments_response.json()
 
+    print(response.json())
+    print('here')
     blog = response.json()
     user = db.get_by_field('User', 'id', blog['user_id'])
     blog['username'] = user.username

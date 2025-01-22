@@ -27,7 +27,7 @@ class User(BaseModel):
     blogs = relationship("Blog", back_populates="user", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
 
-    UPLOAD_FOLDER = '/api/static/profile_pictures'
+    UPLOAD_FOLDER = 'api/static/profile_pictures'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
     def __init__(self, *args: list, **kwargs: dict):
@@ -78,7 +78,7 @@ class User(BaseModel):
             print(self.profile_picture)
             return self.profile_picture
         else:
-            return "/api/v1/static/default.jpeg"
+            return "api/v1/static/default.jpeg"
 
     def delete_profile_picture(self):
         """Delete the current picture"""
