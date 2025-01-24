@@ -26,7 +26,15 @@ To set up the project locally, follow these steps:
     ```sh
     pip install -r requirements.txt
     ```
-4. Run the application:
+4. Set environment variables in a .env file
+   ```sh
+    required envs
+   MYSQL_HOST
+   MYSQL_PWD
+   MYSQL_DB=Blog
+   MYSQL_USER
+   JWT_SECRET
+5. Run the application:
     ```sh
     python api.v1.app.py
     ```
