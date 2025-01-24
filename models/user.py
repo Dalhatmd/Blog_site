@@ -139,6 +139,5 @@ class User(BaseModel):
         """ dictionary representation of user"""
         return {
             'Username': self.username,
-            'Email': self.email,
-            'Profile_picture': self.get_profile_picture_url()
+            'Email': self.email
         }

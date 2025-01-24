@@ -17,6 +17,7 @@ body {
     max-width: 600px;
     margin: 2rem;
     padding: 0 1rem;
+    position: relative;
 }
 
 /* Profile card */
@@ -25,6 +26,7 @@ body {
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
 /* Header */
@@ -51,6 +53,37 @@ a:hover {
     color: white;
 }
 
+/* Profile image */
+img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 1rem 0;
+    border: 3px solid #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Edit button */
+.edit-info {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 2px solid #2c3e50;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.edit-info:hover {
+    background-color: #2c3e50;
+    color: white;
+}
+
 /* Loading state */
 .loading {
     text-align: center;
@@ -71,10 +104,12 @@ a:hover {
 /* Profile information */
 #profile {
     margin-top: 1rem;
+    text-align: left;
 }
 
 .profile-info {
     margin-bottom: 1rem;
+    padding: 0.5rem 0;
 }
 
 .profile-label {
@@ -124,5 +159,17 @@ a:hover {
     
     .profile-stats {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .edit-info {
+        position: static;
+        display: block;
+        width: 100%;
+        margin-top: 1rem;
     }
 }

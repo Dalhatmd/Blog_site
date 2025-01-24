@@ -17,7 +17,6 @@ class BlogCache:
     
     def serialize_blog(self, blog):
         """Convert blog object to JSON string"""
-        blog['cached_at'] = datetime.now().isoformat()
         return json.dumps(blog)
     
     def deserialize_blog(self, blog_json):
