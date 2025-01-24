@@ -3,7 +3,9 @@ from flask import request, jsonify
 import jwt
 from datetime import datetime, timedelta
 from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv()
 JWT_SECRET = getenv('JWT_SECRET')
 JWT_ALGORITHM = getenv('JWT_ALGORITHM', 'HS256')
 JWT_EXPIRATION_HOURS = 24

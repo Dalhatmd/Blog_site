@@ -8,7 +8,7 @@ from models.user import User
 from models.base_model import BaseModel
 from models.base_model import Base
 from models.comments import Comment
-
+from dotenv import load_dotenv
 
 # Define models dictionary - can be expanded with more models
 models: Dict[str, Type[BaseModel]] = {
@@ -23,9 +23,10 @@ class DB:
     def __init__(self):
         """Initialize database connection and create tables"""
         try:
+            load_dotenv()
             # Get database credentials from environment variables
-            mysql_host = getenv('MYSQL_HOST', 'localhost')
-            mysql_user = getenv('MYSQL_USER', 'root')
+            mysql_host = getenv('MYSQL_HOST')
+            mysql_user = getenv('MYSQL_USER')
             mysql_pwd = getenv('MYSQL_PWD')
             mysql_db = getenv('MYSQL_DB')
             mysql_mode = getenv('MYSQL_MODE')
